@@ -3,15 +3,21 @@ name = "hw-04"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-path = "src/solution.rs"
-
 [[bin]]
 name = "solution"
 path = "src/solution.rs"
+test = false
 
-[[bin]]
-name = "draw"
-path = "src/draw.rs"
+[[test]]
+name = "test"
+path = "src/tests.rs"
+harness = false
 
 [dependencies]
+serde = { version = "*", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "*"
+lazy_static = "1.4.0"
+colored = "2.0.4"
+panic-message = "0.3.0"

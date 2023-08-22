@@ -1,0 +1,17 @@
+[package]
+name = "hw-04"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/solution.rs"
+
+[[bin]]
+name = "solution"
+path = "src/solution.rs"
+
+[[bin]]
+name = "draw"
+path = "src/draw.rs"
+
+[dependencies]

@@ -1,13 +1,13 @@
 use colored::Colorize;
 use lazy_static::lazy_static;
+use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::Deserialize;
 use std::{
     io::BufReader,
     panic::{self, UnwindSafe},
 };
-use rand::{rngs::StdRng, Rng, SeedableRng};
 
-mod solution;
+use hw_04::{draw::draw_image, solution};
 
 use panic_message::panic_info_message;
 use solution::{Color, Context, EnumContext, Figures, Intersectable, Point};
@@ -50,22 +50,20 @@ lazy_static! {
     };
 }
 
-impl EnumContext {
-    fn to_dyn(&self) -> Context {
-        Context {
-            figures: self
-                .figures
-                .iter()
-                .map(|f| -> Box<dyn Intersectable> {
-                    match f.clone() {
-                        Figures::Circle(c) => Box::new(c),
-                        Figures::Rectangle(r) => Box::new(r),
-                        Figures::Triangle(t) => Box::new(t),
-                        Figures::Background(b) => Box::new(b),
-                    }
-                })
-                .collect(),
-        }
+fn to_dyn(ctx: &EnumContext) -> Context {
+    Context {
+        figures: ctx
+            .figures
+            .iter()
+            .map(|f| -> Box<dyn Intersectable> {
+                match f.clone() {
+                    Figures::Circle(c) => Box::new(c),
+                    Figures::Rectangle(r) => Box::new(r),
+                    Figures::Triangle(t) => Box::new(t),
+                    Figures::Background(b) => Box::new(b),
+                }
+            })
+            .collect(),
     }
 }
 
@@ -85,7 +83,7 @@ fn run_tests(tests: &[TestSuite]) {
     tests
         .iter()
         .map(|suite| {
-            let ctx = suite.ctx.to_dyn();
+            let ctx = to_dyn(&suite.ctx);
             suite
                 .points
                 .iter()
@@ -97,18 +95,29 @@ fn run_tests(tests: &[TestSuite]) {
 
 fn test_points() {
     let mut rng = StdRng::seed_from_u64(138);
-    for _ in 0..1000{
+    for _ in 0..1000 {
         let x = rng.gen_range(-1000..1000);
         let x2 = rng.gen_range(-1000..1000);
         let y = rng.gen_range(-1000..1000);
         let y2 = rng.gen_range(-1000..1000);
 
-        assert_eq!(Point{x, y} + Point{x: x2, y: y2}, Point{x: x + x2, y: y + y2});
-        assert_eq!(Point{x, y} - Point{x: x2, y: y2}, Point{x: x - x2, y: y - y2});
-        assert_eq!(Point{x, y}.dot(Point{x: x2, y: y2}), x * x2 + y * y2);
-        assert_eq!(Point{x, y}.square(), x * x + y * y);
+        assert_eq!(
+            Point { x, y } + Point { x: x2, y: y2 },
+            Point {
+                x: x + x2,
+                y: y + y2
+            }
+        );
+        assert_eq!(
+            Point { x, y } - Point { x: x2, y: y2 },
+            Point {
+                x: x - x2,
+                y: y - y2
+            }
+        );
+        assert_eq!(Point { x, y }.dot(Point { x: x2, y: y2 }), x * x2 + y * y2);
+        assert_eq!(Point { x, y }.square(), x * x + y * y);
     }
-    
 }
 
 fn test_simple() {
@@ -125,7 +134,10 @@ fn main() -> std::io::Result<()> {
     test_task(test_simple, "2d raytracer: basic tests");
     test_task(test_background, "2d raytracer: added background");
 
-    drop(solution::main);
+    // Раскоммитте код, чтобы порисовать картинки из набора!
+    // let ctx = to_dyn(&TESTS.simple_tests[10].ctx);
+    // draw_image(|p| solution::draw(&ctx, p));
+
     Ok(())
 }
 

@@ -5,8 +5,7 @@ use serde::Deserialize;
 // Этот enum нельзя менять. Нельзя добавлять и убирать цвета.
 // Однако МОЖНО добавлять к нему #[derive(...)].
 
-// #[cfg_attr(test, derive(Deserialize)))]
-#[derive(Clone, Copy, Default, Deserialize, PartialEq, Debug)]
+#[derive(Clone, Default, Deserialize, PartialEq, Debug)]
 pub enum Color {
     // TODO:
     #[default]
@@ -17,13 +16,13 @@ pub enum Color {
     White,
 }
 
-#[derive(Clone, Copy, Deserialize)]
+#[derive(Clone, Copy, Deserialize, Debug, PartialEq)]
 pub struct Point<T> {
     pub x: T,
     pub y: T,
 }
 
-#[derive(Clone, Copy, Default, Deserialize)]
+#[derive(Clone, Default, Deserialize)]
 pub struct RayProperties {
     pub color: Color,
     pub depth: i32,
@@ -105,15 +104,15 @@ impl<T> Sub for Point<T> {
 
 impl<T> Point<T>
 {
-    fn dot(self, _rhs: Self) -> T {
+    pub fn dot(self, _rhs: Self) -> T {
         todo!()
     }
 
-    fn square(self) -> T {
+    pub fn square(self) -> T {
         todo!()
     }
 
-    fn sign(self, _p2: Self, _p3: Self) -> T {
+    pub fn sign(self, _p2: Self, _p3: Self) -> T {
         todo!()
     }
 }

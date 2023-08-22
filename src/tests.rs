@@ -5,6 +5,7 @@ use std::{
     io::BufReader,
     panic::{self, UnwindSafe},
 };
+use rand::{rngs::StdRng, Rng, SeedableRng};
 
 mod solution;
 
@@ -88,10 +89,26 @@ fn run_tests(tests: &[TestSuite]) {
             suite
                 .points
                 .iter()
-                .map(|&(p, c)| assert_eq!(solution::draw(&ctx, p), c))
+                .map(|(p, c)| assert_eq!(solution::draw(&ctx, *p), *c))
                 .count()
         })
         .count();
+}
+
+fn test_points() {
+    let mut rng = StdRng::seed_from_u64(138);
+    for _ in 0..1000{
+        let x = rng.gen_range(-1000..1000);
+        let x2 = rng.gen_range(-1000..1000);
+        let y = rng.gen_range(-1000..1000);
+        let y2 = rng.gen_range(-1000..1000);
+
+        assert_eq!(Point{x, y} + Point{x: x2, y: y2}, Point{x: x + x2, y: y + y2});
+        assert_eq!(Point{x, y} - Point{x: x2, y: y2}, Point{x: x - x2, y: y - y2});
+        assert_eq!(Point{x, y}.dot(Point{x: x2, y: y2}), x * x2 + y * y2);
+        assert_eq!(Point{x, y}.square(), x * x + y * y);
+    }
+    
 }
 
 fn test_simple() {
@@ -104,8 +121,9 @@ fn test_background() {
 
 #[allow(clippy::drop_copy)]
 fn main() -> std::io::Result<()> {
-    test_task(test_simple, "2d raytracer: no background tests");
-    test_task(test_background, "2d raytracer: background tests");
+    test_task(test_points, "points");
+    test_task(test_simple, "2d raytracer: basic tests");
+    test_task(test_background, "2d raytracer: added background");
 
     drop(solution::main);
     Ok(())

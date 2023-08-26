@@ -7,7 +7,8 @@ use std::{
     panic::{self, UnwindSafe},
 };
 
-use hw_04::{draw::draw_image, solution};
+#[allow(unused_imports)]
+use hw_04::solution::{self, draw::draw_image};
 
 use panic_message::panic_info_message;
 use solution::{Color, Context, EnumContext, Figures, Intersectable, Point};

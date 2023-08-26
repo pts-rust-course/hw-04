@@ -2,11 +2,9 @@
 // нарисованную картинку. Скорее всего это должен быть не бинарник, а
 // волшебная функция, которая принимает список объектов и рисует их.
 
-pub fn main() {}
-
 use image::{ImageBuffer, Rgb};
 
-use crate::solution::{Color, Point};
+use super::{Color, Point};
 
 fn color2rgb(c: Color) -> Rgb<u8> {
     match c {

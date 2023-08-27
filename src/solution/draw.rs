@@ -19,8 +19,8 @@ pub fn draw_image(f: impl Fn(Point<i32>) -> Color) {
     // Construct a new by repeated calls to the supplied closure.
     let img: ImageBuffer<_, _> = ImageBuffer::from_fn(500, 500, |x, y| {
         color2rgb(f(Point {
-            x: x as i32,
-            y: y as i32,
+            x: x as i32 - 250,
+            y: 250 - (y as i32),
         }))
     });
 

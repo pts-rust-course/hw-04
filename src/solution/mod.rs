@@ -2,6 +2,10 @@ use std::ops::{Add, Sub};
 
 use serde::Deserialize;
 
+use self::draw::draw_image;
+
+pub mod draw;
+
 // Этот enum нельзя менять. Нельзя добавлять и убирать цвета.
 // Однако МОЖНО добавлять к нему #[derive(...)].
 
@@ -61,14 +65,13 @@ pub struct Background {
 }
 
 // Что мы хотим отрисовать
-pub struct Context {
+pub struct DynContext {
     pub figures: Vec<Box<dyn Intersectable>>,
 }
 
-
 // Или можно то же самое записать в другом представлении:
 #[derive(Clone, Deserialize)]
-pub enum Figures {
+pub enum Shape {
     Circle(Circle),
     Rectangle(Rectangle),
     Triangle(Triangle),
@@ -77,12 +80,16 @@ pub enum Figures {
 
 #[derive(Deserialize)]
 pub struct EnumContext {
-    pub figures: Vec<Figures>,
+    pub figures: Vec<Shape>,
+}
+
+pub fn enum_draw(_ctx: &EnumContext, _point: Point<i32>) -> Color {
+    todo!()
 }
 
 // Для закраски пиксиля выбирается цвет фигуры, которая затрагивает точку (x, y)
 // и обладает наименьшей глубиной.
-pub fn draw(_ctx: &Context, _point: Point<i32>) -> Color {
+pub fn dyn_draw(_ctx: &DynContext, _point: Point<i32>) -> Color {
     todo!()
 }
 
@@ -102,8 +109,7 @@ impl<T> Sub for Point<T> {
     }
 }
 
-impl<T> Point<T>
-{
+impl<T> Point<T> {
     pub fn dot(self, _rhs: Self) -> T {
         todo!()
     }
@@ -141,4 +147,20 @@ impl Intersectable for Background {
     }
 }
 
-pub fn main() {}
+pub fn main() {
+    // Можно добавлять сюда фигуры, и при запуске `cargo run`
+    // они будут отрисовываться в корне проекта в image.png
+    let ctx = EnumContext {
+        figures: vec![
+            Shape::Circle(Circle {
+                center: Point { x: 50, y: 50 },
+                radius: 50,
+                prop: RayProperties {
+                    color: Color::Green,
+                    depth: 0,
+                },
+            }
+        )],
+    };
+    draw_image(|p| enum_draw(&ctx, p));
+}

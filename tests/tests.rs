@@ -11,7 +11,7 @@ use std::{
 use hw_04::solution::{self, draw::draw_image};
 
 use panic_message::panic_info_message;
-use solution::{Color, Context, EnumContext, Figures, Intersectable, Point};
+use solution::{Color, DynContext, EnumContext, Intersectable, Point, Shape};
 
 // Common
 
@@ -51,17 +51,17 @@ lazy_static! {
     };
 }
 
-fn to_dyn(ctx: &EnumContext) -> Context {
-    Context {
+fn to_dyn(ctx: &EnumContext) -> DynContext {
+    DynContext {
         figures: ctx
             .figures
             .iter()
             .map(|f| -> Box<dyn Intersectable> {
                 match f.clone() {
-                    Figures::Circle(c) => Box::new(c),
-                    Figures::Rectangle(r) => Box::new(r),
-                    Figures::Triangle(t) => Box::new(t),
-                    Figures::Background(b) => Box::new(b),
+                    Shape::Circle(c) => Box::new(c),
+                    Shape::Rectangle(r) => Box::new(r),
+                    Shape::Triangle(t) => Box::new(t),
+                    Shape::Background(b) => Box::new(b),
                 }
             })
             .collect(),
@@ -78,17 +78,25 @@ struct TestSuite {
 struct Tests {
     simple_tests: Vec<TestSuite>,
     background_tests: Vec<TestSuite>,
+    triangle_tests: Vec<TestSuite>,
 }
 
-fn run_tests(tests: &[TestSuite]) {
+fn run_tests(tests: &[TestSuite], use_dyn: bool) {
     tests
         .iter()
         .map(|suite| {
-            let ctx = to_dyn(&suite.ctx);
+            let ctx = &suite.ctx;
+            let dyn_ctx = to_dyn(&suite.ctx);
             suite
                 .points
                 .iter()
-                .map(|(p, c)| assert_eq!(solution::draw(&ctx, *p), *c))
+                .map(|(p, c)| {
+                    if use_dyn {
+                        assert_eq!(solution::dyn_draw(&dyn_ctx, *p), *c)
+                    } else {
+                        assert_eq!(solution::enum_draw(&ctx, *p), *c)
+                    }
+                })
                 .count()
         })
         .count();
@@ -121,20 +129,25 @@ fn test_points() {
     }
 }
 
-fn test_simple() {
-    run_tests(&TESTS.simple_tests)
-}
-
-fn test_background() {
-    run_tests(&TESTS.background_tests)
-}
-
 #[allow(clippy::drop_copy)]
 fn main() -> std::io::Result<()> {
     test_task(test_points, "points");
-    test_task(test_simple, "2d raytracer: basic tests");
-    test_task(test_background, "2d raytracer: added background");
-
+    test_task(
+        || run_tests(&TESTS.simple_tests, false),
+        "2d raytracer: basic tests",
+    );
+    test_task(
+        || run_tests(&TESTS.background_tests, false),
+        "2d raytracer: added background",
+    );
+    test_task(
+        || run_tests(&TESTS.triangle_tests, false),
+        "2d raytracer: added triangles",
+    );
+    test_task(
+        || run_tests(&TESTS.simple_tests, true),
+        "2d raytracer: testing dynamic",
+    );
     // Раскоммитте код, чтобы порисовать картинки из набора!
     // let ctx = to_dyn(&TESTS.simple_tests[10].ctx);
     // draw_image(|p| solution::draw(&ctx, p));

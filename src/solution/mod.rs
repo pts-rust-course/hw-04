@@ -147,7 +147,7 @@ impl Intersectable for Background {
     }
 }
 
-pub fn main() {
+fn main() {
     // Можно добавлять сюда фигуры, и при запуске `cargo run`
     // они будут отрисовываться в корне проекта в image.png
     let ctx = EnumContext {

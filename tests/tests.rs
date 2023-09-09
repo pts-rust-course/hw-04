@@ -1,3 +1,4 @@
+use clap::Parser;
 use colored::Colorize;
 use lazy_static::lazy_static;
 use rand::{rngs::StdRng, Rng, SeedableRng};
@@ -102,7 +103,7 @@ fn run_tests(tests: &[TestSuite], use_dyn: bool) {
         .count();
 }
 
-fn test_points() {
+fn points_test() {
     let mut rng = StdRng::seed_from_u64(138);
     for _ in 0..1000 {
         let x = rng.gen_range(-1000..1000);
@@ -129,26 +130,68 @@ fn test_points() {
     }
 }
 
+#[derive(Debug, Clone, Parser)]
+#[clap(name = "hw-test", author)]
+struct Args {
+    test: Option<String>,
+}
+
+macro_rules! or_if_no {
+    ($e1: expr) => {
+        $e1
+    };
+    ($e1: expr, $e2: expr) => {
+        $e2
+    };
+}
+
+macro_rules! tests {
+    ($(=>$subtest: expr,)? $($arg:ident $(=>$func: expr)?),*) => {
+
+        let test = Args::parse().test;
+
+        #[allow(unused_assignments, unused_mut)]
+        let mut subtest = or_if_no!("" $(,$subtest)?);
+
+        paste::item! {
+            match test.as_ref().map(|s| s.as_str()) {
+                $(
+                    Some(stringify!($arg)) => {
+                        let f = or_if_no!([<$arg _test>] $(,$func)?);
+                        test_task(f, (subtest.to_string() + " → " + stringify!($arg)).as_str())
+                    },
+                )*
+                None => {
+                    if subtest == "" {
+                        println!("{}", "\n Starting tests".purple());
+                    }
+                    else {
+                        println!("{} {}", "\n Running subtests:".purple(), subtest)
+                    }
+
+                    $(
+                        if subtest != "" {print!("\t")};
+                        let f = or_if_no!([<$arg _test>] $(,$func)?);
+                        test_task(f, stringify!($arg));
+                    )*
+                },
+                _ => {}
+            }
+        }
+    };
+}
+
 #[allow(clippy::drop_copy)]
 fn main() -> std::io::Result<()> {
-    test_task(test_points, "points");
-    test_task(
-        || run_tests(&TESTS.simple_tests, false),
-        "2d raytracer: basic tests",
-    );
-    test_task(
-        || run_tests(&TESTS.background_tests, false),
-        "2d raytracer: added background",
-    );
-    test_task(
-        || run_tests(&TESTS.triangle_tests, false),
-        "2d raytracer: added triangles",
-    );
-    test_task(
-        || run_tests(&TESTS.simple_tests, true),
-        "2d raytracer: testing dynamic",
-    );
-    // Раскоммитте код, чтобы порисовать картинки из набора!
+    tests!(points);
+
+    tests!(=> "raytracer",
+        basic => || run_tests(&TESTS.simple_tests, false),
+        background => || run_tests(&TESTS.background_tests, false),
+        triangle => || run_tests(&TESTS.triangle_tests, false),
+        dynamic => || run_tests(&TESTS.simple_tests, true));
+
+    // Раскомментите код, чтобы порисовать картинки из набора!
     // let ctx = to_dyn(&TESTS.simple_tests[10].ctx);
     // draw_image(|p| solution::draw(&ctx, p));
 
@@ -156,7 +199,7 @@ fn main() -> std::io::Result<()> {
 }
 
 fn test_task<R, F: FnOnce() -> R + UnwindSafe>(test_func: F, test_name: &str) {
-    print!("Testing {}: ", test_name.cyan());
+    print!("Testing {}: \t", test_name.cyan());
 
     panic::set_hook(Box::new(|info| {
         let msg = panic_info_message(info);

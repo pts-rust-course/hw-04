@@ -27,3 +27,5 @@ serde_json = "*"
 lazy_static = "1.4.0"
 colored = "2.0.4"
 panic-message = "0.3.0"
+clap = { version = "4.4.2", features = ["derive", "std"], default-features = false }
+paste = "1.0.14"

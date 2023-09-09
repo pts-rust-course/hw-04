@@ -151,16 +151,14 @@ fn main() {
     // Можно добавлять сюда фигуры, и при запуске `cargo run`
     // они будут отрисовываться в корне проекта в image.png
     let ctx = EnumContext {
-        figures: vec![
-            Shape::Circle(Circle {
-                center: Point { x: 50, y: 50 },
-                radius: 50,
-                prop: RayProperties {
-                    color: Color::Green,
-                    depth: 0,
-                },
-            }
-        )],
+        figures: vec![Shape::Circle(Circle {
+            center: Point { x: 50, y: 50 },
+            radius: 50,
+            prop: RayProperties {
+                color: Color::Green,
+                depth: 0,
+            },
+        })],
     };
     draw_image(|p| enum_draw(&ctx, p));
 }

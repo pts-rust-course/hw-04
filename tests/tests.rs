@@ -199,7 +199,7 @@ fn main() -> std::io::Result<()> {
 }
 
 fn test_task<R, F: FnOnce() -> R + UnwindSafe>(test_func: F, test_name: &str) {
-    print!("Testing {}: \t", test_name.cyan());
+    print!("Testing {}:\t", test_name.cyan());
 
     panic::set_hook(Box::new(|info| {
         let msg = panic_info_message(info);

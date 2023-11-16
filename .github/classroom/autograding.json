@@ -1,0 +1,54 @@
+{
+    "tests": [
+        {
+            "name": "Points Structure",
+            "setup": "",
+            "run": "cargo test --features github-test -- points",
+            "input": "",
+            "output": "points:\ttest passed ",
+            "comparison": "included",
+            "timeout": 10,
+            "points": 1
+        },
+        {
+            "name": "Basic",
+            "setup": "",
+            "run": "cargo test --features github-test -- basic",
+            "input": "",
+            "output": "basic:\ttest passed ",
+            "comparison": "included",
+            "timeout": 10,
+            "points": 2
+        },
+        {
+            "name": "Background",
+            "setup": "",
+            "run": "cargo test --features github-test -- background",
+            "input": "",
+            "output": "background:\ttest passed",
+            "comparison": "included",
+            "timeout": 10,
+            "points": 1
+        },
+        {
+            "name": "Triangle",
+            "setup": "",
+            "run": "cargo test --features github-test -- triangle",
+            "input": "",
+            "output": "triangle:\ttest passed",
+            "comparison": "included",
+            "timeout": 10,
+            "points": 3
+        },
+        {
+            "name": "Dynamic Context",
+            "setup": "",
+            "run": "cargo test --features github-test -- dynamic",
+            "input": "",
+            "output": "dynamic:\ttest passed",
+            "comparison": "included",
+            "timeout": 10,
+            "points": 3
+        }
+    ]
+}
